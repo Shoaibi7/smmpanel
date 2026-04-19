@@ -257,7 +257,7 @@ new class extends Component {
 
             @if($deposits->hasPages())
                 <div class="px-5 py-4 border-t border-gray-100 dark:border-gray-700">
-                    {{ $deposits->links('pagination::bootstrap-5') }}
+                    {{ $deposits->links() }}
                 </div>
             @endif
         </div>
