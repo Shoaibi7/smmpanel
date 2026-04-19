@@ -49,7 +49,7 @@
     </section>
 
     <!-- Features Section -->
-    <section class="py-24 bg-secondary-50 dark:bg-secondary-900/50 relative">
+    <section class="py-24 relative">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-20">
                 <h2 class="text-3xl lg:text-4xl font-bold text-secondary-900 dark:text-white mb-4">Why Choose SMM PRO?</h2>
@@ -90,6 +90,119 @@
                     <p class="text-secondary-600 dark:text-secondary-400">Our dedicated support team is available around the clock to assist you with any questions.</p>
                 </x-card>
             </div>
+        </div>
+    </section>
+
+    <!-- Platform Services Section -->
+    @php
+        $platforms = [
+            ['key' => 'facebook',  'label' => 'Facebook',   'emoji' => '📘'],
+            ['key' => 'instagram', 'label' => 'Instagram',  'emoji' => '📸'],
+            ['key' => 'tiktok',    'label' => 'TikTok',     'emoji' => '🎵'],
+            ['key' => 'youtube',   'label' => 'YouTube',    'emoji' => '▶️'],
+            ['key' => 'twitter',   'label' => 'Twitter/X',  'emoji' => '🐦'],
+            ['key' => 'pinterest', 'label' => 'Pinterest',  'emoji' => '📌'],
+            ['key' => 'snapchat',  'label' => 'Snapchat',   'emoji' => '👻'],
+            ['key' => 'spotify',   'label' => 'Spotify',    'emoji' => '🎧'],
+        ];
+        $platformContent = [
+            'facebook'  => ['title' => 'Facebook SMM Services',   'description' => 'Facebook Pages are the gateway for businesses to market to billions of users. A Facebook Page is a public presence similar to a personal profile. Get More Likes, Followers, Post Likes, Video Views, and more — all delivered fast and safely.', 'features' => ['Page Likes','Post Likes','Followers','Video Views','Comments','Shares'], 'image' => 'https://cdn-icons-png.flaticon.com/512/5968/5968764.png'],
+            'instagram' => ['title' => 'Instagram SMM Services',  'description' => 'Grow your Instagram presence with real followers, likes, views, and story interactions. Perfect for influencers, brands, and businesses looking to dominate the Instagram algorithm.',                                                                    'features' => ['Followers','Likes','Views','Story Views','Comments','Saves'],           'image' => 'https://cdn-icons-png.flaticon.com/512/2111/2111463.png'],
+            'tiktok'    => ['title' => 'TikTok SMM Services',     'description' => 'Boost your TikTok content with viral views, followers, and likes. Our TikTok services help you reach the For You Page faster and grow your audience organically.',                                                                                              'features' => ['Followers','Likes','Views','Shares','Comments','Live Views'],           'image' => 'https://cdn-icons-png.flaticon.com/512/3046/3046121.png'],
+            'youtube'   => ['title' => 'YouTube SMM Services',    'description' => 'Increase your YouTube channel authority with real subscribers, views, likes, and watch hours. Accelerate your monetization journey with our safe and effective YouTube services.',                                                                              'features' => ['Subscribers','Views','Likes','Watch Hours','Comments','Shares'],        'image' => 'https://cdn-icons-png.flaticon.com/512/1384/1384060.png'],
+            'twitter'   => ['title' => 'Twitter / X SMM Services','description' => 'Amplify your Twitter/X presence with followers, retweets, likes, and impressions. Build credibility and reach a wider audience with our high-quality Twitter services.',                                                                                       'features' => ['Followers','Likes','Retweets','Impressions','Replies','Bookmarks'],     'image' => 'https://cdn-icons-png.flaticon.com/512/5969/5969020.png'],
+            'pinterest' => ['title' => 'Pinterest SMM Services',  'description' => 'Drive traffic and grow your Pinterest account with followers, repins, and board followers. Perfect for e-commerce brands and content creators looking to expand their reach.',                                                                                   'features' => ['Followers','Repins','Likes','Board Followers','Views','Comments'],      'image' => 'https://cdn-icons-png.flaticon.com/512/145/145808.png'],
+            'snapchat'  => ['title' => 'Snapchat SMM Services',   'description' => 'Grow your Snapchat audience with followers and story views. Reach a younger demographic and increase your brand visibility on one of the most engaging social platforms.',                                                                                      'features' => ['Followers','Story Views','Subscribers','Views','Shares','Saves'],       'image' => 'https://cdn-icons-png.flaticon.com/512/2111/2111703.png'],
+            'spotify'   => ['title' => 'Spotify SMM Services',    'description' => 'Boost your music career with Spotify plays, followers, and monthly listeners. Get your tracks noticed by the algorithm and grow your fanbase with our Spotify promotion services.',                                                                             'features' => ['Plays','Followers','Monthly Listeners','Saves','Playlist Adds','Podcast Plays'], 'image' => 'https://cdn-icons-png.flaticon.com/512/174/174872.png'],
+        ];
+    @endphp
+
+    <section class="py-24 relative overflow-hidden" x-data="{ activeTab: 'facebook' }">
+        <div class="absolute inset-0 pointer-events-none overflow-hidden">
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-primary-600/10 blur-[140px] rounded-full"></div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+
+            <!-- Section Header -->
+            <div class="text-center mb-12">
+                <h2 class="text-4xl lg:text-5xl font-extrabold text-secondary-900 dark:text-white mb-4">SMM Panel Services</h2>
+                <p class="text-secondary-500 dark:text-secondary-400 max-w-2xl mx-auto text-base leading-relaxed">
+                    Promote yourself or your company. If you're looking for a way to increase your online presence, you can use our panel at the best and cheapest price.
+                </p>
+            </div>
+
+            <!-- Platform Tabs -->
+            <div class="flex items-center gap-2 overflow-x-auto pb-3 mb-10 justify-start lg:justify-center" style="scrollbar-width:none;">
+                @foreach($platforms as $p)
+                    <button
+                        @click="activeTab = '{{ $p['key'] }}'"
+                        :class="activeTab === '{{ $p['key'] }}'
+                            ? 'bg-primary-600 text-white border-primary-500 shadow-lg shadow-primary-500/30 scale-105'
+                            : 'bg-secondary-100 dark:bg-secondary-800/80 text-secondary-600 dark:text-secondary-300 border-secondary-200 dark:border-secondary-700 hover:border-primary-500/60 hover:text-primary-600 dark:hover:text-white'"
+                        class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border text-sm font-semibold whitespace-nowrap transition-all duration-200 flex-shrink-0 cursor-pointer"
+                    >
+                        <span class="text-base leading-none">{{ $p['emoji'] }}</span>
+                        {{ $p['label'] }}
+                    </button>
+                @endforeach
+            </div>
+
+            <!-- Tab Panels -->
+            @foreach($platforms as $p)
+                @php $c = $platformContent[$p['key']]; @endphp
+                <div
+                    x-show="activeTab === '{{ $p['key'] }}'"
+                    x-transition:enter="transition ease-out duration-300"
+                    x-transition:enter-start="opacity-0 scale-[0.98]"
+                    x-transition:enter-end="opacity-100 scale-100"
+                    x-transition:leave="transition ease-in duration-150"
+                    x-transition:leave-start="opacity-100"
+                    x-transition:leave-end="opacity-0"
+                    class="rounded-2xl border border-secondary-200 dark:border-secondary-700/60 bg-secondary-50 dark:bg-secondary-800/50 overflow-hidden"
+                    style="display: none;"
+                >
+                    <!-- Inner grid: always 2 cols on md+, stack on mobile -->
+                    <div style="display:grid; grid-template-columns: 1fr auto; align-items:center; gap:0; min-height:340px;">
+
+                        <!-- Left: Text content -->
+                        <div class="p-8 lg:p-14">
+                            <h3 class="text-3xl lg:text-4xl font-extrabold text-secondary-900 dark:text-white mb-5 leading-tight">
+                                {{ $c['title'] }}
+                            </h3>
+                            <p class="text-secondary-600 dark:text-secondary-300 text-base lg:text-lg leading-relaxed mb-7 max-w-xl">
+                                {{ $c['description'] }}
+                            </p>
+                            <div class="flex flex-wrap gap-2 mb-8">
+                                @foreach($c['features'] as $feature)
+                                    <span class="inline-flex items-center gap-1 px-3 py-1.5 bg-secondary-100 dark:bg-secondary-700/60 border border-secondary-200 dark:border-secondary-600/50 text-secondary-700 dark:text-secondary-200 text-sm rounded-full font-medium">
+                                        <svg class="w-3.5 h-3.5 text-primary-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                                        {{ $feature }}
+                                    </span>
+                                @endforeach
+                            </div>
+                            <x-button variant="primary" size="lg" onclick="window.location.href='{{ route('register') }}'">
+                                Get Started — It's Free
+                            </x-button>
+                        </div>
+
+                        <!-- Right: Platform logo -->
+                        <div class="flex items-center justify-center p-8 lg:p-14" style="width:280px;">
+                            <div class="relative">
+                                <div class="absolute inset-0 bg-primary-500/20 blur-3xl rounded-full scale-150 pointer-events-none"></div>
+                                <img
+                                    src="{{ $c['image'] }}"
+                                    alt="{{ $p['label'] }}"
+                                    style="width:200px; height:200px; object-fit:contain; position:relative; filter:drop-shadow(0 20px 40px rgba(0,0,0,0.5));"
+                                    loading="lazy"
+                                >
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            @endforeach
+
         </div>
     </section>
 
