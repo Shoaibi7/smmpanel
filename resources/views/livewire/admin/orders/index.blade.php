@@ -86,7 +86,8 @@ new class extends Component {
             <div class="hidden lg:grid lg:grid-cols-12 gap-3 px-3 py-2.5 bg-secondary-50/50 dark:bg-secondary-900/30 rounded-lg border border-secondary-100 dark:border-secondary-800">
                 <div class="col-span-1 text-[9px] uppercase font-black text-secondary-400 tracking-widest flex items-center">ID</div>
                 <div class="col-span-3 text-[9px] uppercase font-black text-secondary-400 tracking-widest flex items-center">User & Service</div>
-                <div class="col-span-3 text-[9px] uppercase font-black text-secondary-400 tracking-widest flex items-center">Order Target (Link)</div>
+                <div class="col-span-1 text-[9px] uppercase font-black text-secondary-400 tracking-widest flex items-center justify-center">Start Count</div>
+                <div class="col-span-2 text-[9px] uppercase font-black text-secondary-400 tracking-widest flex items-center">Order Target (Link)</div>
                 <div class="col-span-1 text-[9px] uppercase font-black text-secondary-400 tracking-widest flex items-center justify-center">Quantity</div>
                 <div class="col-span-1 text-[9px] uppercase font-black text-secondary-400 tracking-widest flex items-center justify-end">Charge</div>
                 <div class="col-span-2 text-[9px] uppercase font-black text-secondary-400 tracking-widest flex items-center justify-center">Status</div>
@@ -116,8 +117,13 @@ new class extends Component {
                                 </div>
                             </div>
 
+                            <!-- Start Count -->
+                            <div class="col-span-1 text-center">
+                                <div class="text-[11px] font-black text-secondary-900 dark:text-white">{{ number_format($order->start_count ?? 0) }}</div>
+                            </div>
+
                             <!-- Link -->
-                            <div class="col-span-3">
+                            <div class="col-span-2">
                                 <div class="flex items-center gap-2">
                                     <div class="p-1.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 rounded-lg">
                                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.172 13.828a4 4 0 005.656 0l4-4a4 4 0 10-5.656-5.656l-1.102 1.101" /></svg>

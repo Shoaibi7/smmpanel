@@ -150,9 +150,9 @@ new class extends Component {
                             </p>
                             <div class="text-[11px] font-black text-amber-900 dark:text-amber-300">
                                 @if($paymentMethod === 'jazzcash')
-                                    JazzCash Account: <span class="font-mono">0300-0000000</span>
+                                    JazzCash Account: <span class="font-mono">03009499712</span>
                                 @elseif($paymentMethod === 'easypaisa')
-                                    Easypaisa Account: <span class="font-mono">0310-0000000</span>
+                                    Easypaisa Account: <span class="font-mono">03009499712</span>
                                 @else
                                     Bank: <span class="font-mono">HBL — 01234567890123</span>
                                 @endif
