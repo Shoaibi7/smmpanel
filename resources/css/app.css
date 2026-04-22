@@ -19,3 +19,15 @@
         100% { transform: translate(0px, 0px) scale(1); }
     }
 }
+
+/* Quill Editor Styles */
+.ql-toolbar { border-radius: 6px 6px 0 0 !important; border-color: rgb(203 213 225) !important; }
+.ql-container { border-radius: 0 0 6px 6px !important; border-color: rgb(203 213 225) !important; font-size: 14px; }
+.dark .ql-toolbar { border-color: rgb(51 65 85) !important; background: rgb(15 23 42); }
+.dark .ql-container { border-color: rgb(51 65 85) !important; background: rgb(15 23 42); color: #e2e8f0; }
+.dark .ql-editor.ql-blank::before { color: rgb(100 116 139); }
+.dark .ql-toolbar .ql-stroke { stroke: #94a3b8; }
+.dark .ql-toolbar .ql-fill { fill: #94a3b8; }
+.dark .ql-toolbar .ql-picker { color: #94a3b8; }
+.dark .ql-toolbar button:hover .ql-stroke { stroke: #f97316; }
+.dark .ql-toolbar button:hover .ql-fill { fill: #f97316; }

@@ -206,44 +206,115 @@
         </div>
     </section>
 
-    <!-- Services Table Section (Preview) -->
+    <!-- Services Section -->
+    @php
+        $previewServices = \App\Models\Service::with('category')
+            ->where('is_active', true)
+            ->orderBy('category_id')
+            ->orderBy('sale_price')
+            ->limit(30)
+            ->get();
+        $previewCategories = $previewServices->pluck('category')->unique('id')->filter();
+    @endphp
+
     <section class="py-24 relative overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-col md:flex-row justify-between items-end mb-12">
-                <div>
-                    <h2 class="text-3xl lg:text-4xl font-bold text-secondary-900 dark:text-white mb-4 text-left">Top Selling Services</h2>
-                    <p class="text-secondary-600 dark:text-secondary-400 max-w-xl">Check out our most popular services across major platforms.</p>
-                </div>
+
+            <div class="text-center mb-12">
+                <h2 class="text-3xl lg:text-4xl font-bold text-secondary-900 dark:text-white mb-3">Our Services & Pricing</h2>
+                <p class="text-secondary-600 dark:text-secondary-400 max-w-xl mx-auto">Real prices, no hidden fees. Browse our services before signing up.</p>
             </div>
 
-            <x-card class="p-0 border-none shadow-2xl overflow-hidden">
-                <x-table :headers="['Service', 'Rate per 1,000', 'Min/Max', 'Status']">
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-secondary-900 dark:text-white">Instagram Real Followers</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-primary-600 font-bold">$0.85</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-secondary-500">100 / 100,000</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Working</span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-secondary-900 dark:text-white">TikTok Viral Views</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-primary-600 font-bold">$0.001</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-secondary-500">1,000 / 1,000,000</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Instant</span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-secondary-900 dark:text-white">Facebook Page Likes (HQ)</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-primary-600 font-bold">$1.20</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-secondary-500">50 / 50,000</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Safe</span>
-                        </td>
-                    </tr>
-                </x-table>
-            </x-card>
+            @if($previewServices->isNotEmpty())
+                @php $firstCatId = $previewCategories->first()?->id; @endphp
+                <div x-data="{ activeCategory: '{{ $firstCatId }}' }">
+
+                    {{-- Category tabs --}}
+                    <div class="flex flex-wrap gap-2 mb-6 justify-center">
+                        @foreach($previewCategories as $cat)
+                            <button
+                                @click="activeCategory = '{{ $cat->id }}'"
+                                :class="activeCategory === '{{ $cat->id }}'
+                                    ? 'bg-primary-600 text-white border-primary-500 shadow-md shadow-primary-500/20'
+                                    : 'bg-white dark:bg-secondary-800 text-secondary-600 dark:text-secondary-300 border-secondary-200 dark:border-secondary-700 hover:border-primary-400 hover:text-primary-600'"
+                                class="px-4 py-2 rounded-full border text-sm font-semibold transition-all duration-200 cursor-pointer"
+                            >
+                                {{ $cat->name }}
+                            </button>
+                        @endforeach
+                    </div>
+
+                    {{-- Service tables per category --}}
+                    @foreach($previewCategories as $cat)
+                        @php $catServices = $previewServices->where('category_id', $cat->id); @endphp
+                        <div x-show="activeCategory === '{{ $cat->id }}'"
+                             x-transition:enter="transition ease-out duration-200"
+                             x-transition:enter-start="opacity-0 translate-y-2"
+                             x-transition:enter-end="opacity-100 translate-y-0"
+                             style="display:none;">
+                            <div class="bg-white dark:bg-secondary-900/40 rounded-2xl border border-secondary-100 dark:border-secondary-800 overflow-hidden shadow-sm">
+                                <table class="w-full text-sm">
+                                    <thead class="bg-secondary-50 dark:bg-secondary-900/80 border-b border-secondary-100 dark:border-secondary-800">
+                                        <tr>
+                                            <th class="px-5 py-3 text-left text-[10px] font-black uppercase tracking-widest text-secondary-400">ID</th>
+                                            <th class="px-5 py-3 text-left text-[10px] font-black uppercase tracking-widest text-secondary-400">Service Name</th>
+                                            <th class="px-5 py-3 text-left text-[10px] font-black uppercase tracking-widest text-secondary-400">Rate / 1,000</th>
+                                            <th class="px-5 py-3 text-left text-[10px] font-black uppercase tracking-widest text-secondary-400">Min / Max</th>
+                                            <th class="px-5 py-3 text-left text-[10px] font-black uppercase tracking-widest text-secondary-400">Features</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-secondary-50 dark:divide-secondary-800/50">
+                                        @foreach($catServices as $service)
+                                            <tr class="hover:bg-secondary-50/50 dark:hover:bg-secondary-800/30 transition-colors">
+                                                <td class="px-5 py-3.5 text-[10px] font-bold text-secondary-400">{{ $service->id }}</td>
+                                                <td class="px-5 py-3.5">
+                                                    <span class="text-sm font-semibold text-secondary-900 dark:text-white">{{ $service->name }}</span>
+                                                </td>
+                                                <td class="px-5 py-3.5">
+                                                    <span class="text-sm font-black text-primary-600 dark:text-primary-400">
+                                                        {{ format_currency($service->sale_price ?? $service->price_per_k) }}
+                                                    </span>
+                                                </td>
+                                                <td class="px-5 py-3.5 text-xs text-secondary-500 font-medium">
+                                                    {{ number_format($service->min_qty) }} / {{ number_format($service->max_qty) }}
+                                                </td>
+                                                <td class="px-5 py-3.5">
+                                                    <div class="flex gap-1.5 items-center">
+                                                        @if($service->drip_feed || $service->dripfeed)
+                                                            <span title="Dripfeed" class="text-xs">⚡</span>
+                                                        @endif
+                                                        @if($service->refill)
+                                                            <span title="Refill" class="text-xs">♻️</span>
+                                                        @endif
+                                                        @if($service->cancel)
+                                                            <span title="Cancel" class="text-xs">✖️</span>
+                                                        @endif
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    @endforeach
+
+                    {{-- Sign up CTA below table --}}
+                    <div class="mt-8 text-center">
+                        <p class="text-secondary-500 dark:text-secondary-400 text-sm mb-4">Showing {{ $previewServices->count() }} services. Sign up to see all services and place orders.</p>
+                        <a href="{{ route('register') }}" class="inline-flex items-center gap-2 px-6 py-3 bg-primary-600 hover:bg-primary-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-primary-500/20">
+                            Create Free Account — See All Services
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                        </a>
+                    </div>
+
+                </div>
+            @else
+                <div class="bg-white dark:bg-secondary-900/40 rounded-2xl border border-secondary-100 dark:border-secondary-800 p-12 text-center">
+                    <p class="text-secondary-500 text-sm">Services coming soon. <a href="{{ route('register') }}" class="text-primary-600 font-bold hover:underline">Sign up</a> to get notified.</p>
+                </div>
+            @endif
+
         </div>
     </section>
 

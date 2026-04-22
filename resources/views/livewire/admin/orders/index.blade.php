@@ -14,7 +14,7 @@ new class extends Component {
     {
         return [
             'orders' => Order::query()
-                ->with('user', 'service.category')
+                ->with('user', 'service.category', 'service.apiProvider')
                 ->when($this->statusFilter, fn($q) => $q->where('status', $this->statusFilter))
                 ->when($this->search, function($q) {
                     $q->where('id', 'like', '%' . $this->search . '%')
@@ -114,6 +114,11 @@ new class extends Component {
                                         <a href="{{ route('admin.orders.show', $order->id) }}" class="hover:text-orange-700 transition-colors">{{ $order->service?->name ?? 'Service deleted' }}</a>
                                     </div>
                                     <div class="text-[8px] text-secondary-400 uppercase tracking-widest mt-0.5">{{ $order->service?->category?->name ?? 'Uncategorized' }}</div>
+                                    @if($order->service?->apiProvider)
+                                        <div class="text-[8px] text-blue-500 dark:text-blue-400 font-bold uppercase tracking-widest mt-0.5">
+                                            ⚡ {{ $order->service->apiProvider->short_name }}
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
 

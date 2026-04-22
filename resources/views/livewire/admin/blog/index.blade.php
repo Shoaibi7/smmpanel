@@ -13,6 +13,7 @@ new class extends Component {
     public $excerpt = '';
     public $is_published = true;
     public $editingPostId = null;
+    public ?int $confirmingDeleteId = null;
 
     public function with()
     {
@@ -23,18 +24,33 @@ new class extends Component {
 
     public function save()
     {
-        $this->validate([
-            'title' => 'required|min:5',
-            'content' => 'required',
+        \Illuminate\Support\Facades\Log::info('Blog save() called', [
+            'title'   => $this->title,
+            'content' => $this->content,
+            'excerpt' => $this->excerpt,
+            'is_published' => $this->is_published,
         ]);
 
+        $this->validate([
+            'title' => 'required|min:3',
+        ]);
+
+        $body = trim(strip_tags($this->content));
+        if ($body === '') {
+            $this->addError('content', 'Body content is required.');
+            \Illuminate\Support\Facades\Log::warning('Blog save() blocked: content is empty');
+            return;
+        }
+
         $data = [
-            'title' => $this->title,
-            'slug' => Str::slug($this->title),
-            'body' => $this->content,
-            'excerpt' => $this->excerpt ?: Str::limit($this->content, 150),
+            'title'        => $this->title,
+            'slug'         => Str::slug($this->title),
+            'body'         => $this->content,
+            'excerpt'      => $this->excerpt ?: Str::limit(strip_tags($this->content), 150),
             'is_published' => $this->is_published,
         ];
+
+        \Illuminate\Support\Facades\Log::info('Blog saving data', $data);
 
         if ($this->editingPostId) {
             Post::find($this->editingPostId)->update($data);
@@ -55,12 +71,20 @@ new class extends Component {
         $this->content = $post->body;
         $this->excerpt = $post->excerpt;
         $this->is_published = $post->is_published;
+        $this->dispatch('quill-set-content', content: $post->body);
     }
 
     public function delete($id)
     {
         Post::find($id)->delete();
+        $this->confirmingDeleteId = null;
         $this->dispatch('toast', message: 'Post deleted!', type: 'info');
+    }
+
+    public function confirmDelete(int $id): void
+    {
+        $this->confirmingDeleteId = $id;
+        $this->dispatch('open-delete-modal');
     }
 
     public function cancel()
@@ -69,7 +93,7 @@ new class extends Component {
     }
 }; ?>
 
-<div class="py-12">
+<div class="py-12" x-data="{ modalOpen: false }" @open-delete-modal.window="modalOpen = true">
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div class="lg:col-span-1">
@@ -82,6 +106,7 @@ new class extends Component {
                         <div>
                             <x-input-label for="ptitle" value="Post Title" />
                             <x-text-input wire:model="title" id="ptitle" type="text" class="mt-1 block w-full" />
+                            @error('title') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
 
                         <div>
@@ -91,7 +116,12 @@ new class extends Component {
 
                         <div>
                             <x-input-label for="pcontent" value="Body Content" />
-                            <textarea wire:model="content" id="pcontent" rows="6" class="mt-1 block w-full border-secondary-300 dark:border-secondary-700 dark:bg-secondary-900 dark:text-secondary-300 focus:border-primary-500 dark:focus:border-primary-400 focus:ring-primary-500 dark:focus:ring-primary-400 rounded-md shadow-sm transition-colors duration-200"></textarea>
+                            <div class="mt-1" x-on:quill-updated.window="$wire.set('content', $event.detail.html)">
+                                <div wire:ignore id="quill-editor-wrap">
+                                    <div id="quill-editor" style="min-height:220px;"></div>
+                                </div>
+                            </div>
+                            @error('content') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
 
                         <div class="flex items-center space-x-2">
@@ -128,7 +158,7 @@ new class extends Component {
                                 </td>
                                 <td class="px-6 py-4 space-x-2">
                                     <button wire:click="edit({{ $post->id }})" class="text-xs font-bold text-primary-600 hover:underline">Edit</button>
-                                    <button wire:click="delete({{ $post->id }})" wire:confirm="Are you sure?" class="text-xs font-bold text-red-600 hover:underline">Delete</button>
+                                    <button wire:click="confirmDelete({{ $post->id }})" class="text-xs font-bold text-red-600 hover:underline">Delete</button>
                                 </td>
                             </tr>
                         @endforeach
@@ -140,4 +170,95 @@ new class extends Component {
             </div>
         </div>
     </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div x-show="modalOpen"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-secondary-950/60 backdrop-blur-sm"
+        x-cloak
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0">
+
+        <div @click.away="modalOpen = false"
+            class="bg-white dark:bg-secondary-900 w-full max-w-sm rounded-[2.5rem] p-8 shadow-2xl border border-secondary-100 dark:border-secondary-800"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 scale-95 translate-y-4"
+            x-transition:enter-end="opacity-100 scale-100 translate-y-0">
+
+            <div class="text-center">
+                <div class="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-6 text-red-600">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                </div>
+
+                <h3 class="text-lg font-black text-secondary-900 dark:text-white uppercase tracking-tight mb-2">Delete Post</h3>
+                <p class="text-xs text-secondary-500 font-medium leading-relaxed mb-8">
+                    Are you sure you want to delete this post? This action cannot be undone.
+                </p>
+
+                <div class="flex flex-col gap-3">
+                    <button
+                        @click="$wire.delete($wire.confirmingDeleteId).then(() => modalOpen = false)"
+                        class="w-full py-4 text-white bg-red-600 hover:bg-red-500 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-red-600/20 transition-all active:scale-[0.98]">
+                        Yes, Delete Post
+                    </button>
+                    <button @click="modalOpen = false"
+                        class="text-[10px] font-black text-secondary-400 hover:text-secondary-600 dark:hover:text-secondary-200 uppercase tracking-widest transition-colors py-2">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (function () {
+        var _quill = null;
+
+        function bootQuill() {
+            var el = document.getElementById('quill-editor');
+            if (!el) return;
+            if (typeof window.Quill === 'undefined') return;
+            if (el.classList.contains('ql-container')) return;
+
+            _quill = new window.Quill(el, {
+                theme: 'snow',
+                placeholder: 'Write your blog post content here...',
+                modules: {
+                    toolbar: [
+                        [{ header: [1, 2, 3, false] }],
+                        ['bold', 'italic', 'underline', 'strike'],
+                        [{ list: 'ordered' }, { list: 'bullet' }],
+                        ['blockquote', 'code-block'],
+                        ['link'],
+                        ['clean']
+                    ]
+                }
+            });
+
+            // Sync directly to Livewire property on every keystroke
+            _quill.on('text-change', function () {
+                var html = _quill.root.innerHTML;
+                if (html === '<p><br></p>') html = '';
+                // Dispatch a browser event that Livewire listens to
+                document.getElementById('quill-editor-wrap').dispatchEvent(
+                    new CustomEvent('quill-updated', { bubbles: true, detail: { html: html } })
+                );
+            });
+
+            // Populate when editing an existing post
+            document.addEventListener('quill-set-content', function (e) {
+                var html = e.detail?.content || (Array.isArray(e.detail) ? e.detail[0] : '') || '';
+                if (_quill) _quill.root.innerHTML = html || '';
+            });
+        }
+
+        setTimeout(bootQuill, 0);
+        document.addEventListener('livewire:navigated', function () { _quill = null; setTimeout(bootQuill, 50); });
+    })();
+    </script>
 </div>

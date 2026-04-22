@@ -34,7 +34,7 @@ new class extends Component {
             @endif
 
             <article class="prose prose-lg dark:prose-invert max-w-none text-secondary-700 dark:text-secondary-300">
-                {!! nl2br(e($post->body)) !!}
+                {!! $post->body !!}
             </article>
 
             <div class="mt-16 pt-16 border-t border-secondary-100 dark:border-secondary-800">

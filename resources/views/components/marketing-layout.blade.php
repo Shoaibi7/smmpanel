@@ -47,6 +47,7 @@
 
                             <!-- Navigation Links -->
                             <div class="hidden space-x-8 sm:ms-10 sm:flex mt-1">
+                                <a href="/services" class="text-sm font-medium hover:text-primary-600 transition-colors">Services</a>
                                 <a href="/blog" class="text-sm font-medium hover:text-primary-600 transition-colors">Blog</a>
                                 <a href="/faq" class="text-sm font-medium hover:text-primary-600 transition-colors">FAQ</a>
                             </div>
@@ -79,6 +80,7 @@
                 <!-- Responsive Navigation Menu -->
                 <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden bg-white dark:bg-secondary-950 border-b border-secondary-100 dark:border-secondary-800">
                     <div class="pt-2 pb-3 space-y-1 px-4">
+                        <a href="/services" class="block py-2 text-base font-medium">Services</a>
                         <a href="/blog" class="block py-2 text-base font-medium">Blog</a>
                         <a href="/faq" class="block py-2 text-base font-medium">FAQ</a>
                         @auth

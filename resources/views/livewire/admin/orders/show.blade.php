@@ -126,7 +126,11 @@ new class extends Component {
 <div class="space-y-6 py-6">
     <!-- Header -->
     <div class="flex items-center justify-between gap-3">
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-3">
+            <div class="px-3 py-1.5 bg-secondary-100 dark:bg-secondary-800 rounded-xl">
+                <span class="text-[9px] font-black uppercase tracking-widest text-secondary-500 dark:text-secondary-400">Order</span>
+                <span class="text-[13px] font-black text-secondary-900 dark:text-white ml-1">#{{ $order->id }}</span>
+            </div>
             <span class="text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full
                 {{ [
                     'pending' => 'bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400',
@@ -176,7 +180,15 @@ new class extends Component {
         <div class="bg-white dark:bg-secondary-900 rounded-xl border border-secondary-100 dark:border-secondary-800 p-4 shadow-sm">
             <div class="text-[9px] font-black uppercase tracking-widest text-secondary-400 mb-2">Service</div>
             <div class="text-[12px] font-black text-orange-600">{{ $order->service->name }}</div>
-            <div class="text-[9px] font-bold text-secondary-500 uppercase tracking-widest">{{ $order->service->category->name }}</div>
+            <div class="text-[9px] font-bold text-secondary-500 uppercase tracking-widest mt-0.5">{{ $order->service->category->name }}</div>
+            @if($order->service->apiProvider)
+                <div class="mt-2 pt-2 border-t border-secondary-100 dark:border-secondary-800 flex items-center gap-1.5">
+                    <span class="text-[8px] font-black uppercase tracking-widest text-secondary-400">Provider:</span>
+                    <span class="px-2 py-0.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-[8px] font-black uppercase tracking-widest rounded-md">
+                        ⚡ {{ $order->service->apiProvider->short_name }}
+                    </span>
+                </div>
+            @endif
         </div>
 
         <!-- Charge & Quantity Card -->
