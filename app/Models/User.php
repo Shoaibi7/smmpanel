@@ -24,6 +24,7 @@ class User extends Authenticatable
         'password',
         'role',
         'balance',
+        'is_blocked',
     ];
 
     /**
@@ -47,6 +48,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password'          => 'hashed',
             'balance'           => 'decimal:2',
+            'is_blocked'        => 'boolean',
         ];
     }
 

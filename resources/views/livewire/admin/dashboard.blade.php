@@ -9,10 +9,11 @@ new class extends Component {
     public function with()
     {
         return [
-            'totalOrders' => Order::count(),
-            'totalUsers' => User::count(),
+            'totalOrders'   => Order::count(),
+            'totalUsers'    => User::where('role', '!=', 'admin')->count(),
             'totalServices' => Service::count(),
-            'recentOrders' => Order::with('user', 'service')->latest()->take(5)->get(),
+            'recentOrders'  => Order::with('user', 'service')->latest()->take(5)->get(),
+            'recentUsers'   => User::where('role', '!=', 'admin')->latest()->take(8)->get(),
         ];
     }
 }; ?>
@@ -137,6 +138,59 @@ new class extends Component {
                     </div>
                 </div>
             </div>
+
+            <!-- Recent Users -->
+            <div class="bg-white dark:bg-secondary-900 rounded-2xl shadow-sm border border-secondary-100 dark:border-secondary-800 overflow-hidden mt-8">
+                <div class="px-6 py-5 border-b border-secondary-100 dark:border-secondary-800 flex items-center justify-between">
+                    <h3 class="text-sm font-black text-secondary-900 dark:text-white uppercase tracking-tight">Recent Users</h3>
+                    <a href="{{ route('admin.users') }}" class="text-[10px] font-black text-orange-600 uppercase tracking-widest hover:text-orange-700 transition-colors">Manage All &rarr;</a>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead class="bg-secondary-50 dark:bg-secondary-900/80 border-b border-secondary-100 dark:border-secondary-800">
+                            <tr>
+                                <th class="px-5 py-3 text-left text-[10px] font-black uppercase tracking-widest text-secondary-400">User</th>
+                                <th class="px-5 py-3 text-left text-[10px] font-black uppercase tracking-widest text-secondary-400">Balance</th>
+                                <th class="px-5 py-3 text-center text-[10px] font-black uppercase tracking-widest text-secondary-400">Status</th>
+                                <th class="px-5 py-3 text-left text-[10px] font-black uppercase tracking-widest text-secondary-400">Joined</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-secondary-50 dark:divide-secondary-800/50">
+                            @foreach($recentUsers as $user)
+                                <tr class="hover:bg-secondary-50/50 dark:hover:bg-secondary-800/30 transition-colors">
+                                    <td class="px-5 py-3.5">
+                                        <div class="flex items-center gap-3">
+                                            <img src="https://ui-avatars.com/api/?name={{ urlencode($user->name) }}&background=f97316&color=fff&size=32" class="w-8 h-8 rounded-lg" alt="">
+                                            <div>
+                                                <p class="text-xs font-black text-secondary-900 dark:text-white">{{ $user->name }}</p>
+                                                <p class="text-[10px] text-secondary-400">{{ $user->email }}</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-5 py-3.5">
+                                        <span class="text-sm font-black text-emerald-600 dark:text-emerald-400">{{ format_currency($user->balance) }}</span>
+                                    </td>
+                                    <td class="px-5 py-3.5 text-center">
+                                        @if($user->is_blocked)
+                                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[9px] font-black uppercase bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Blocked
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[9px] font-black uppercase bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Active
+                                            </span>
+                                        @endif
+                                    </td>
+                                    <td class="px-5 py-3.5 text-[10px] font-bold text-secondary-500">
+                                        {{ $user->created_at->format('M d, Y') }}
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
             </div>
         </div>
     </div>

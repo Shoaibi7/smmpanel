@@ -39,6 +39,12 @@ new class extends Component {
 
     public function mount()
     {
+        if (Auth::user()->is_blocked) {
+            $this->dispatch('toast', message: 'Your account has been blocked. Please contact support.', type: 'error');
+            $this->redirect(route('orders.index'), navigate: true);
+            return;
+        }
+
         $this->categories = Category::where('is_active', true)->orderBy('sort_order')->get();
     }
 
@@ -116,6 +122,11 @@ new class extends Component {
 
     public function placeOrder()
     {
+        if (Auth::user()->is_blocked) {
+            $this->dispatch('toast', message: 'Your account has been blocked. Please contact support.', type: 'error');
+            return;
+        }
+
         $rules = [
             'serviceId' => [
                 'required',
@@ -248,6 +259,17 @@ new class extends Component {
 @endphp
 
 <div class="space-y-6">
+    @if(Auth::user()->is_blocked)
+        <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl p-6 flex items-start gap-4">
+            <div class="w-10 h-10 bg-red-100 dark:bg-red-900/40 rounded-xl flex items-center justify-center flex-shrink-0 text-red-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+            </div>
+            <div>
+                <h3 class="text-sm font-black text-red-700 dark:text-red-400 uppercase tracking-tight">Account Blocked</h3>
+                <p class="text-xs text-red-600 dark:text-red-400 mt-1">Your account has been suspended. You cannot place new orders. Please contact support to resolve this issue.</p>
+            </div>
+        </div>
+    @endif
     <!-- Header Section -->
     <div class="flex items-center justify-between gap-3">
         <div>
@@ -377,7 +399,7 @@ new class extends Component {
                     </div>
 
                     <div class="pt-2">
-                        <button type="submit" class="w-full py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-xl font-black text-[11px] uppercase tracking-[0.18em] shadow-xl shadow-orange-600/20 active:scale-[0.98] transition-all border border-orange-400/20 group">
+                        <button type="submit" @disabled(Auth::user()->is_blocked) class="w-full py-3 bg-orange-600 hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl font-black text-[11px] uppercase tracking-[0.18em] shadow-xl shadow-orange-600/20 active:scale-[0.98] transition-all border border-orange-400/20 group">
                             Place Order Now
                             <svg class="w-3.5 h-3.5 inline-block ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
                         </button>

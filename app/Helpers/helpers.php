@@ -49,7 +49,6 @@ if (!function_exists('format_currency')) {
             return 'Rs ' . number_format($converted, 2);
         }
 
-        // Standard USD formatting with 4 decimal places for SMM panel accuracy
-        return '$' . number_format($converted, 4);
+        return '$' . number_format($converted, 2);
     }
 }

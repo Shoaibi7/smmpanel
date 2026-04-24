@@ -8,14 +8,36 @@ use Illuminate\Support\Facades\Auth;
 new class extends Component {
     use WithPagination;
 
+    public string $search = '';
+
     public function with()
     {
         return [
             'orders' => Order::where('user_id', Auth::id())
-                ->with('service.category')
+                ->with('service.category', 'service.apiProvider')
+                ->when($this->search, function ($q) {
+                    $q->where(function ($q) {
+                        $q->where('id', 'like', '%' . $this->search . '%')
+                          ->orWhere('api_order_id', 'like', '%' . $this->search . '%')
+                          ->orWhere('link', 'like', '%' . $this->search . '%')
+                          ->orWhereHas('service', fn($q) => $q->where('name', 'like', '%' . $this->search . '%'));
+                    });
+                })
                 ->latest()
                 ->paginate(15),
         ];
+    }
+
+    public function updatingSearch(): void { $this->resetPage(); }
+
+    public function newOrder(): void
+    {
+        if (Auth::user()->is_blocked) {
+            $this->dispatch('toast', message: 'Your account has been blocked. You cannot place new orders. Please contact support.', type: 'error');
+            return;
+        }
+
+        $this->redirect(route('orders.create'), navigate: true);
     }
 }; ?>
 
@@ -32,10 +54,10 @@ new class extends Component {
         </div>
         <div class="flex items-center gap-3">
             <div class="relative hidden sm:block">
-                <input type="text" placeholder="Search orders..." class="pl-10 pr-4 py-2 bg-white dark:bg-secondary-900 border border-secondary-100 dark:border-secondary-800 rounded-xl text-[10px] font-bold uppercase tracking-widest focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all outline-none w-64">
+                <input type="text" wire:model.live.debounce.300ms="search" placeholder="Search orders..." class="pl-10 pr-4 py-2 bg-white dark:bg-secondary-900 border border-secondary-100 dark:border-secondary-800 rounded-xl text-[10px] font-bold uppercase tracking-widest focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all outline-none w-64">
                 <svg class="w-4 h-4 text-secondary-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
             </div>
-            <button onclick="window.location.href='{{ route('orders.create') }}'" class="px-5 py-2.5 bg-orange-600 hover:bg-orange-700 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-orange-500/20 active:scale-95 transition-all">
+            <button wire:click="newOrder" class="px-5 py-2.5 bg-orange-600 hover:bg-orange-700 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-orange-500/20 active:scale-95 transition-all">
                 New Order
             </button>
         </div>
@@ -60,13 +82,16 @@ new class extends Component {
                         <tr class="group hover:bg-secondary-50/50 dark:hover:bg-secondary-800/20 transition-all">
                             <td class="px-6 py-5">
                                 <div class="flex flex-col gap-1">
-                                    <a href="{{ route('orders.show', $order->id) }}" class="text-[9px] font-black text-orange-500 uppercase tracking-widest hover:text-orange-600 transition-colors" wire:navigate>#{{ $order->id }}</a>
+                                    <a href="{{ route('orders.show', $order->id) }}" class="text-[9px] font-black text-orange-500 uppercase tracking-widest hover:text-orange-600 transition-colors" wire:navigate>
+                                        {{ $order->api_order_id ? 'API #' . $order->api_order_id : '#' . $order->id }}
+                                    </a>
                                     <a href="{{ route('orders.show', $order->id) }}" class="text-xs font-black text-secondary-900 dark:text-white tracking-tight hover:text-orange-600 transition-colors" wire:navigate>{{ $order->service->name }}</a>
                                     <div class="flex items-center gap-2 mt-1">
-                                        <a href="{{ $order->link }}" target="_blank" class="text-[10px] font-bold text-secondary-400 hover:text-orange-500 transition-colors flex items-center gap-1">
-                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                                            {{ Str::limit($order->link, 35) }}
-                                        </a>
+                                        @if($order->service?->apiProvider)
+                                            <span class="text-[9px] font-bold text-blue-500 dark:text-blue-400">
+                                                ⚡ {{ $order->service->apiProvider->api_name }}
+                                            </span>
+                                        @endif
                                     </div>
                                 </div>
                             </td>
