@@ -84,8 +84,7 @@ new class extends Component {
         @if($orders->count() > 0)
             <!-- Table Header -->
             <div class="hidden lg:grid lg:grid-cols-12 gap-3 px-3 py-2.5 bg-secondary-50/50 dark:bg-secondary-900/30 rounded-lg border border-secondary-100 dark:border-secondary-800">
-                <div class="col-span-1 text-[9px] uppercase font-black text-secondary-400 tracking-widest flex items-center">ID</div>
-                <div class="col-span-3 text-[9px] uppercase font-black text-secondary-400 tracking-widest flex items-center">User & Service</div>
+                <div class="col-span-4 text-[9px] uppercase font-black text-secondary-400 tracking-widest flex items-center">User & Service</div>
                 <div class="col-span-1 text-[9px] uppercase font-black text-secondary-400 tracking-widest flex items-center justify-center">Start Count</div>
                 <div class="col-span-2 text-[9px] uppercase font-black text-secondary-400 tracking-widest flex items-center">Order Target (Link)</div>
                 <div class="col-span-1 text-[9px] uppercase font-black text-secondary-400 tracking-widest flex items-center justify-center">Quantity</div>
@@ -99,14 +98,12 @@ new class extends Component {
                 @foreach($orders as $order)
                     <div class="bg-white dark:bg-secondary-800 rounded-lg shadow-sm border border-secondary-100 dark:border-secondary-700 hover:shadow-md transition-all duration-200 group">
                         <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 p-3 items-center">
-                            <!-- ID -->
-                            <div class="col-span-1">
-                                <span class="px-2 py-1 bg-secondary-100 dark:bg-secondary-700 rounded text-[9px] font-black text-secondary-600 dark:text-secondary-400">#{{ $order->id }}</span>
-                            </div>
-
-                            <!-- User & Service -->
-                            <div class="col-span-3">
+                            <!-- User & Service (with order ID) -->
+                            <div class="col-span-4">
                                 <div class="flex flex-col">
+                                    <span class="text-[9px] font-black text-orange-500 uppercase tracking-widest mb-0.5">
+                                        {{ $order->api_order_id ? 'API #' . $order->api_order_id : '#' . $order->id }}
+                                    </span>
                                     <div class="text-[11px] font-black text-secondary-900 dark:text-white leading-tight uppercase">
                                         <a href="{{ route('admin.orders.show', $order->id) }}" class="hover:text-orange-600 transition-colors">{{ $order->user->name ?? 'Guest' }}</a>
                                     </div>
