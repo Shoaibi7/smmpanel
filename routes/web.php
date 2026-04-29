@@ -6,9 +6,25 @@ use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\PaymentController;
 
 Route::view('/', 'welcome');
-// Frontend services Volt route removed to use controller-based `services` resource routes
-Volt::route('blog', 'blog.index')->name('blog.index');
-Volt::route('blog/{slug}', 'blog.show')->name('blog.show');
+Route::get('blog', function () {
+    $posts = \App\Models\Post::where('is_published', true)->latest()->paginate(9);
+    return view('blog.index', compact('posts'));
+})->name('blog.index');
+
+Route::get('blog/{slug}', function ($slug) {
+    $post = \App\Models\Post::where('slug', $slug)->firstOrFail();
+    return view('blog.show', compact('post'));
+})->name('blog.show');
+
+Route::get('services', function () {
+    $categories = \App\Models\Category::where('is_active', true)->get();
+    $services = \App\Models\Service::with('category')
+        ->where('is_active', true)
+        ->when(request('search'), fn($q) => $q->where('name', 'like', '%'.request('search').'%'))
+        ->when(request('category'), fn($q) => $q->where('category_id', request('category')))
+        ->paginate(20);
+    return view('services.index', compact('services', 'categories'));
+})->name('services.public');
 Route::view('faq', 'faq')->name('faq');
 Route::view('contact', 'contact')->name('contact');
 // Volt::route('servicespage', 'services.index')->name('services.public');
@@ -36,6 +52,10 @@ Volt::route('funds', 'funds.add-funds')
     ->middleware(['auth', 'verified'])
     ->name('funds.index');
 
+Volt::route('api-access', 'api.index')
+    ->middleware(['auth', 'verified'])
+    ->name('api.access');
+
 Route::view('profile', 'profile')
     ->middleware(['auth'])
     ->name('profile');
@@ -60,6 +80,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Volt::route('deposits', 'admin.deposits.index')->name('deposits');
     Volt::route('blog', 'admin.blog.index')->name('blog');
     Volt::route('settings', 'admin.settings.index')->name('settings');
+    Volt::route('api', 'admin.api.index')->name('api');
 
     // API Providers Management
     Route::resource('api-providers', ApiProviderController::class)->except(['create']);

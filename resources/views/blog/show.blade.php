@@ -1,29 +1,8 @@
-<?php
-
-use Livewire\Volt\Component;
-use App\Models\Post;
-
-new class extends Component {
-    public ?Post $post = null;
-
-    public function mount($slug)
-    {
-        // Redirect logged-in users to the authenticated blog show view
-        if (auth()->check()) {
-            $this->redirect(route('blog.auth.show', $slug), navigate: false);
-            return;
-        }
-
-        $this->post = Post::where('slug', $slug)->firstOrFail();
-    }
-}; ?>
-
 <x-marketing-layout>
-    @if($post)
     <section class="pt-32 pb-20">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="mb-12">
-                <a href="/blog" class="text-sm font-bold text-primary-600 dark:text-primary-400 hover:underline mb-8 inline-block">← Back to Blog</a>
+                <a href="{{ route('blog.index') }}" class="text-sm font-bold text-primary-600 dark:text-primary-400 hover:underline mb-8 inline-block">← Back to Blog</a>
                 <h1 class="text-4xl lg:text-5xl font-extrabold text-secondary-900 dark:text-white leading-tight mb-6">
                     {{ $post->title }}
                 </h1>

@@ -34,7 +34,7 @@ new class extends Component {
         }
 
         $categoryName = strtolower((string) ($this->selectedService->category?->name ?? ''));
-        return str_contains($categoryName, 'comment');
+        return str_contains($categoryName, 'comment') && str_contains($type, 'comment');
     }
 
     public function mount()
@@ -167,7 +167,7 @@ new class extends Component {
         $type = preg_replace('/[^a-z0-9]+/', '_', $rawType);
         $type = trim((string) $type, '_');
         $categoryName = strtolower((string) ($service->category?->name ?? ''));
-        $requiresComments = in_array($type, ['custom_comments', 'custom_comments_package', 'comment_replies'], true) || str_contains($type, 'comment') || str_contains($categoryName, 'comment');
+        $requiresComments = in_array($type, ['custom_comments', 'custom_comments_package', 'comment_replies'], true) || str_contains($type, 'comment');
         if ($requiresComments) {
             $lines = preg_split('/\r\n|\r|\n/', (string) $this->commentsText);
             $comments = collect($lines)

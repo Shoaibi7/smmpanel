@@ -4,9 +4,11 @@ use Livewire\Volt\Component;
 use App\Models\Post;
 use Illuminate\Support\Str;
 use Livewire\WithPagination;
+use Livewire\WithFileUploads;
+use Illuminate\Support\Facades\Storage;
 
 new class extends Component {
-    use WithPagination;
+    use WithPagination, WithFileUploads;
 
     public $title = '';
     public $content = '';
@@ -14,6 +16,8 @@ new class extends Component {
     public $is_published = true;
     public $editingPostId = null;
     public ?int $confirmingDeleteId = null;
+    public $image = null;
+    public $existingImage = null;
 
     public function with()
     {
@@ -42,12 +46,18 @@ new class extends Component {
             return;
         }
 
+        $imagePath = $this->existingImage;
+        if ($this->image) {
+            $imagePath = $this->image->store('blog', 'public');
+        }
+
         $data = [
             'title'        => $this->title,
             'slug'         => Str::slug($this->title),
             'body'         => $this->content,
             'excerpt'      => $this->excerpt ?: Str::limit(strip_tags($this->content), 150),
             'is_published' => $this->is_published,
+            'image'        => $imagePath,
         ];
 
         \Illuminate\Support\Facades\Log::info('Blog saving data', $data);
@@ -60,7 +70,7 @@ new class extends Component {
             $this->dispatch('toast', message: 'Post created!', type: 'success');
         }
 
-        $this->reset(['title', 'content', 'excerpt', 'is_published', 'editingPostId']);
+        $this->reset(['title', 'content', 'excerpt', 'is_published', 'editingPostId', 'image', 'existingImage']);
     }
 
     public function edit($id)
@@ -71,6 +81,8 @@ new class extends Component {
         $this->content = $post->body;
         $this->excerpt = $post->excerpt;
         $this->is_published = $post->is_published;
+        $this->existingImage = $post->image;
+        $this->image = null;
         $this->dispatch('quill-set-content', content: $post->body);
     }
 
@@ -89,7 +101,7 @@ new class extends Component {
 
     public function cancel()
     {
-        $this->reset(['title', 'content', 'excerpt', 'is_published', 'editingPostId']);
+        $this->reset(['title', 'content', 'excerpt', 'is_published', 'editingPostId', 'image', 'existingImage']);
     }
 }; ?>
 
@@ -112,6 +124,21 @@ new class extends Component {
                         <div>
                             <x-input-label for="pexcerpt" value="Excerpt (Short Summary)" />
                             <textarea wire:model="excerpt" id="pexcerpt" rows="2" class="mt-1 block w-full border-secondary-300 dark:border-secondary-700 dark:bg-secondary-900 dark:text-secondary-300 focus:border-primary-500 dark:focus:border-primary-400 focus:ring-primary-500 dark:focus:ring-primary-400 rounded-md shadow-sm transition-colors duration-200"></textarea>
+                        </div>
+
+                        <div>
+                            <x-input-label value="Featured Image" />
+                            <div class="mt-1">
+                                @if($existingImage)
+                                    <div class="mb-2 relative inline-block">
+                                        <img src="{{ Storage::url($existingImage) }}" class="h-24 w-full object-cover rounded-lg border border-secondary-200 dark:border-secondary-700" alt="Current image">
+                                        <button type="button" wire:click="$set('existingImage', null)" class="absolute top-1 right-1 w-5 h-5 bg-red-600 text-white rounded-full text-xs flex items-center justify-center hover:bg-red-500">✕</button>
+                                    </div>
+                                @endif
+                                <input wire:model="image" type="file" accept="image/*"
+                                    class="block w-full text-xs text-secondary-600 dark:text-secondary-400 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100 dark:file:bg-primary-900/30 dark:file:text-primary-400 cursor-pointer">
+                                @error('image') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                            </div>
                         </div>
 
                         <div>

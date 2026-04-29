@@ -219,7 +219,7 @@ new class extends Component {
 
                             <!-- Quick Amount Buttons -->
                             <div class="flex gap-2 mt-2">
-                                @foreach([100, 200, 500, 1000] as $preset)
+                                @foreach([300, 500, 1000, 1500] as $preset)
                                     <button type="button" wire:click="$set('amount', {{ $preset }})"
                                         class="flex-1 py-1.5 text-[9px] font-black uppercase tracking-widest rounded-lg border border-secondary-100 dark:border-secondary-800 bg-secondary-50 dark:bg-black/20 text-secondary-600 dark:text-secondary-400 hover:border-emerald-500 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-all">
                                         {{ $preset }}

@@ -64,10 +64,10 @@
                             <x-slot name="trigger">
                                 <button class="flex items-center gap-2.5 p-1 rounded-xl hover:bg-secondary-100 dark:hover:bg-secondary-800 transition-all group active:scale-95">
                                     <div class="w-7 h-7 rounded-lg bg-orange-600 flex items-center justify-center text-white font-black text-[10px] shadow-lg shadow-orange-500/20">
-                                        {{ substr(auth()->user()->name, 0, 1) }}
+                                        {{ substr(auth()->user()?->name ?? 'U', 0, 1) }}
                                     </div>
                                     <div class="hidden sm:block text-left">
-                                        <p class="text-[10px] font-black text-secondary-900 dark:text-white leading-none uppercase tracking-widest">{{ auth()->user()->name }}</p>
+                                        <p class="text-[10px] font-black text-secondary-900 dark:text-white leading-none uppercase tracking-widest">{{ auth()->user()?->name ?? '' }}</p>
                                     </div>
                                     <svg class="w-3.5 h-3.5 text-secondary-400 group-hover:text-orange-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" /></svg>
                                 </button>
@@ -76,7 +76,7 @@
                             <x-slot name="content">
                                 <div class="px-4 py-3 border-b border-secondary-100 dark:border-secondary-800">
                                     <p class="text-[9px] text-secondary-500 font-bold uppercase tracking-widest leading-none mb-1.5">Connected Account</p>
-                                    <p class="text-xs font-black text-secondary-900 dark:text-white truncate">{{ auth()->user()->email }}</p>
+                                    <p class="text-xs font-black text-secondary-900 dark:text-white truncate">{{ auth()->user()?->email ?? '' }}</p>
                                 </div>
                                 <x-dropdown-link :href="route('profile')" wire:navigate class="!text-[10px] font-black uppercase tracking-widest py-3">
                                     <div class="flex items-center gap-2">

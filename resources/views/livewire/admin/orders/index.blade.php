@@ -101,9 +101,12 @@ new class extends Component {
                             <!-- User & Service (with order ID) -->
                             <div class="col-span-4">
                                 <div class="flex flex-col">
-                                    <span class="text-[9px] font-black text-orange-500 uppercase tracking-widest mb-0.5">
-                                        {{ $order->api_order_id ? 'API #' . $order->api_order_id : '#' . $order->id }}
-                                    </span>
+                                    <div class="flex items-center gap-2 mb-0.5">
+                                        <span class="text-[9px] font-black text-orange-500 uppercase tracking-widest">#{{ $order->id }}</span>
+                                        @if($order->api_order_id)
+                                            <span class="text-[9px] font-mono font-bold text-blue-500 dark:text-blue-400">API #{{ $order->api_order_id }}</span>
+                                        @endif
+                                    </div>
                                     <div class="text-[11px] font-black text-secondary-900 dark:text-white leading-tight uppercase">
                                         <a href="{{ route('admin.orders.show', $order->id) }}" class="hover:text-orange-600 transition-colors">{{ $order->user->name ?? 'Guest' }}</a>
                                     </div>

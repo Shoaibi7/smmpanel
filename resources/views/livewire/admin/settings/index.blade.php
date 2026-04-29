@@ -21,6 +21,7 @@ new class extends Component {
             'payfast_secured_key' => '',
             'currency_code' => 'USD',
             'usd_to_pkr_rate' => '280',
+            'api_endpoint' => url('api/v1'),
         ];
 
         foreach ($defaults as $key => $value) {
@@ -112,6 +113,17 @@ new class extends Component {
                     <div>
                         <x-input-label for="meta_description" value="Default Meta Description" />
                         <textarea wire:model="settings.meta_description" id="meta_description" rows="3" class="mt-1 block w-full border-secondary-300 dark:border-secondary-700 dark:bg-secondary-900 dark:text-secondary-300 focus:border-primary-500 dark:focus:border-primary-400 focus:ring-primary-500 dark:focus:ring-primary-400 rounded-md shadow-sm transition-colors duration-200"></textarea>
+                    </div>
+                </div>
+
+                <hr class="border-secondary-100 dark:border-secondary-800">
+
+                <div class="space-y-4">
+                    <h4 class="text-sm font-bold text-secondary-900 dark:text-white uppercase tracking-widest">API Configuration</h4>
+                    <div>
+                        <x-input-label for="api_endpoint" value="API Endpoint URL" />
+                        <x-text-input wire:model="settings.api_endpoint" id="api_endpoint" type="text" class="mt-1 block w-full font-mono" placeholder="https://yourdomain.com/api/v1" />
+                        <p class="text-xs text-secondary-400 mt-1">Base URL shown to users for API access. Update if you use a custom domain.</p>
                     </div>
                 </div>
 

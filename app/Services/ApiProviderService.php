@@ -119,15 +119,19 @@ class ApiProviderService
                 $additionalParams['comments'] = implode("\n", array_values($additionalParams['comments']));
             }
 
-            $url = $additionalParams['url'] ?? $additionalParams['link'] ?? $link;
+            // Remove 'url' from additionalParams to avoid duplicate — provider only needs 'link'
+            unset($additionalParams['url']);
 
             $params = array_merge([
-                'action' => 'add',
-                'service' => $serviceId,
-                'link' => $link,
-                'url' => $url,
+                'action'   => 'add',
+                'service'  => $serviceId,
+                'link'     => $link,
                 'quantity' => $quantity,
             ], $additionalParams);
+
+            Log::info('Sending order to provider ' . $this->provider->short_name, [
+                'params' => array_merge($params, ['key' => '***']),
+            ]);
 
             $response = $this->makeRequest(null, $params);
 

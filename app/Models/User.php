@@ -25,6 +25,7 @@ class User extends Authenticatable
         'role',
         'balance',
         'is_blocked',
+        'api_token_key',
     ];
 
     /**
@@ -60,6 +61,11 @@ class User extends Authenticatable
     public function orders()
     {
         return $this->hasMany(\App\Models\Order::class);
+    }
+
+    public function apiTokens()
+    {
+        return $this->hasMany(\App\Models\ApiToken::class);
     }
 
     public function incrementBalance(float $amount): void

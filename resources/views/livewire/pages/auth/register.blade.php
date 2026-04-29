@@ -28,7 +28,12 @@ new #[Layout('layouts.auth-simple')] class extends Component
             'password' => ['required', 'string', 'confirmed', Rules\Password::defaults()],
         ]);
 
+        $validated['api_token_key'] = \Illuminate\Support\Str::random(64);
+
         event(new Registered($user = User::create($validated)));
+
+        // Auto-generate API token for new user
+        \App\Models\ApiToken::generate($user);
 
         Auth::login($user);
 
