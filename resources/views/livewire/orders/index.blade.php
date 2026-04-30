@@ -84,11 +84,6 @@ new class extends Component {
                                 <div class="flex flex-col gap-1">
                                     <a href="{{ route('orders.show', $order->id) }}" class="text-[9px] font-black text-orange-500 uppercase tracking-widest hover:text-orange-600 transition-colors" wire:navigate>#{{ $order->id }}</a>
                                     <a href="{{ route('orders.show', $order->id) }}" class="text-xs font-black text-secondary-900 dark:text-white tracking-tight hover:text-orange-600 transition-colors" wire:navigate>{{ $order->service->name }}</a>
-                                    @if($order->service?->apiProvider)
-                                        <span class="text-[9px] font-bold text-blue-500 dark:text-blue-400">
-                                            ⚡ {{ $order->service->apiProvider->api_name }}
-                                        </span>
-                                    @endif
                                 </div>
                             </td>
                             <td class="px-6 py-5 whitespace-nowrap">
