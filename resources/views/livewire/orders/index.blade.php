@@ -70,6 +70,7 @@ new class extends Component {
                 <thead>
                     <tr class="border-b border-secondary-100 dark:border-secondary-800">
                         <th class="px-6 py-5 text-[10px] font-black text-secondary-400 uppercase tracking-[0.2em]">Order Detail</th>
+                        <th class="px-6 py-5 text-[10px] font-black text-secondary-400 uppercase tracking-[0.2em]">Target Link</th>
                         <th class="px-6 py-5 text-[10px] font-black text-secondary-400 uppercase tracking-[0.2em]">Quantity</th>
                         <th class="px-6 py-5 text-[10px] font-black text-secondary-400 uppercase tracking-[0.2em]">Start Count</th>
                         <th class="px-6 py-5 text-[10px] font-black text-secondary-400 uppercase tracking-[0.2em]">Charge</th>
@@ -85,6 +86,12 @@ new class extends Component {
                                     <a href="{{ route('orders.show', $order->id) }}" class="text-[9px] font-black text-orange-500 uppercase tracking-widest hover:text-orange-600 transition-colors" wire:navigate>#{{ $order->id }}</a>
                                     <a href="{{ route('orders.show', $order->id) }}" class="text-xs font-black text-secondary-900 dark:text-white tracking-tight hover:text-orange-600 transition-colors" wire:navigate>{{ $order->service->name }}</a>
                                 </div>
+                            </td>
+                            <td class="px-6 py-5">
+                                <a href="{{ $order->link }}" target="_blank" class="text-[10px] font-bold text-secondary-500 hover:text-orange-500 transition-colors flex items-center gap-1 max-w-[180px]">
+                                    <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                                    <span class="truncate">{{ Str::limit($order->link, 30) }}</span>
+                                </a>
                             </td>
                             <td class="px-6 py-5 whitespace-nowrap">
                                 <span class="text-xs font-black text-secondary-900 dark:text-white">{{ number_format($order->quantity) }}</span>
@@ -120,7 +127,7 @@ new class extends Component {
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-6 py-20 text-center">
+                            <td colspan="7" class="px-6 py-20 text-center">
                                 <div class="w-16 h-16 bg-secondary-50 dark:bg-secondary-800 rounded-2xl flex items-center justify-center mx-auto mb-4 opacity-40">
                                     <svg class="w-8 h-8 text-secondary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
                                 </div>
